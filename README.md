@@ -18,5 +18,5 @@ The "PCB artwork" is the Geber layout of PCB, and it can directly be used to man
 
 **5. K-Wave model for data collection**
 
-""
+"data_collection.m" and "Copy_of_k_wave_multi_media_cuboid.m" are for dataset collection. The scripts are performed in Matlab.
    
