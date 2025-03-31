@@ -28,7 +28,6 @@ ser = serial.Serial(
     timeout=1
 )
 
-# 读取一个"mark_start.csv"文件，100行，是2个mark点的3D 坐标，这样作为media的初始位置
 df = pd.read_csv('mark_start.csv', header=None)
 mark2 = df.iloc[:, 0:3].values
 mark3 = df.iloc[:, 3:6].values
@@ -57,6 +56,7 @@ media_start2_z_val = most_frequent(media_start2_z)
 media_start3_x_val = most_frequent(media_start3_x)
 media_start3_y_val = most_frequent(media_start3_y)
 media_start3_z_val = most_frequent(media_start3_z)
+
 # 比较上面求得的z值是否一致，误差小于1,大于1则终止整个程序
 z_difference = abs(media_start2_z_val - media_start3_z_val)
 if z_difference > 1:
@@ -69,7 +69,6 @@ else:
 # 首先发送 phase，让 ball 到达 target 点
 # 初始化延迟矩阵
 delay = np.zeros((16, 203))  # 15行203列的零矩阵
-# 循环读取 1.csv 到 16.csv 文件
 for i in range(1, 17):
     filename = f"/home/mjwu/PixelXYZ_20250221/trap_py_learning/target4/{i}.csv"
     num = np.loadtxt(filename, delimiter=',', dtype=int).T  # 读取并转置
@@ -109,18 +108,11 @@ for ii in range(16):
     if ii == 0:
         time.sleep(3) #预留3s时间用于放置小球
 
-    # 延迟 1 秒，等待数据传输完成
-    # current_time = datetime.now().strftime('%H:%M:%S.%f')[:-3]
-    # print(f"Current time in loop: {current_time}")  # 打印当前时间
     time.sleep(1.5) # 每1轮phase update后，都要延迟1s
 
 # 关闭串口
 ser.close()
-
-# 初始化 xy 数组
 xy = np.zeros((196, 3))  # 假设需要14x14的网格
-
-# 定义常量
 k = 39.37
 pitch = 10.5  # mm
 
@@ -148,8 +140,6 @@ xy[:, 2] = 0
 # 保存为 CSV 文件
 np.savetxt("xyz_coordinates.csv", xy, delimiter=',', comments='')
 
-
-
 # 读取 calibration.csv 和 sort_index_edited.csv 文件
 f3 = pd.read_csv('calibration.csv')  # 读取 calibration.csv
 reson_calibration = np.zeros((f3.shape[0], f3.shape[1]))  # 初始化数组，假设与 f3 形状一致
@@ -174,17 +164,14 @@ mark_z_drif = None
 
 time.sleep(26)
 
-# 获取ball最终停留的target position
 df = pd.read_csv('final.csv', header=None)
 target = np.zeros((1, 3))  # 1x3 数组
 target_new = np.zeros((1, 3))  # 1x3 数组
 target[0, 0] = df.iloc[0, 0]  # X
 target[0, 1] = df.iloc[0, 1]  # Y
 target[0, 2] = 244  # Z, 这个Z值需要看下dataset，修改下，他们之间有1mm以下误差
-
 print(f"\nEnter Compensation Mode")  # 打印当前时间
 
-# 初始化文件索引
 file_index = 1
 
 while True:
@@ -192,29 +179,23 @@ while True:
     # current_time = datetime.now().strftime('%H:%M:%S.%f')[:-3]
     # print(f"Current time in loop: {current_time}")  # 打印当前时间
 
-    # 构造文件名
     # file_name = f'drift_data{file_index}.csv'
     file_name = f'drift_data.csv'
     # print(f"\nStart New Round of Update.")
 
     try:
-            # 尝试读取记录ball偏离target的CSV 文件
             data = pd.read_csv(file_name, header=None)  # 不使用表头
             # file_index = 2 if file_index == 1 else 1
             # print(data)
 
-            # 如果文件读取成功且为空，则手动抛出异常
             if data.empty:
                raise ValueError("File is empty")
 
-            # 检查列数是否为3
             if data.shape[1] != 3:
                 raise ValueError("File does not have exactly 3 columns")
 
-            # 尝试读取记录media标记点动态坐标的CSV 文件
             data1 = pd.read_csv("mark.csv", header=None)  # 没表头
 
-            # 检查是否有inf值或列数问题
             if (data1.isin([float('inf')])).any().any():  # 如果有inf值
                 raise ValueError("Data Contains of 'Inf'，Wait 2ms.")
 
@@ -222,9 +203,6 @@ while True:
             if data1.shape[1] < 3:
                 raise ValueError("Data col is less than 3，Wait2ms.")
 
-
-            # 无异常，执行正常代码
-            # 检查每行的第三列是否为1
             startTime0 = time.time()
 
             if data.iloc[0, 2] != 1:
@@ -235,8 +213,6 @@ while True:
             err_y = data.iloc[0, 1]  # 第二列
             flag  = data.iloc[0, 2]  # 第三列
 
-
-            # # 判断读取的erro是否有更新，如果无，则本次循环跳过，直到error不同
             if previous_err_x == err_x and previous_err_y == err_y:
                 # print("Qt Has Not Updated Error Values, Skip This Round.")
                 time.sleep(0.001)  # 等待 1 毫秒
@@ -265,8 +241,6 @@ while True:
             # else:
             #     print('误差值合法，往下执行.')
 
-            # 计算media的动态移动差值，叠加在初始值上(-32.3, -46.7, 168.8)，因为我们在作采样时候，media的量化是依据的左下角那个点, 所以
-            # 将这个相对位移，叠加在初始点上
             mark2_x = data1.iloc[0, 0]  # 读取动态的mark坐标， 第一列X
             mark2_y = data1.iloc[0, 1]  # 第二列Y
             mark2_z = data1.iloc[0, 2]  # 第三列Z
@@ -274,18 +248,15 @@ while True:
             mark3_y = data1.iloc[0, 4]  # 第二列
             mark3_z = data1.iloc[0, 5]  # 第三列
 
-            # mark2_x 是动态值，media_start2_x_val 是静止态的初始点，这里全部/2 是因为我们用mark2和3这2个点的均值作为代表
             mark_x_drif = (mark2_x + mark3_x)/2 - (media_start2_x_val + media_start3_x_val)/2
             mark_y_drif = (mark2_y + mark3_y)/2 - (media_start2_y_val + media_start3_y_val)/2
             mark_z_drif = (mark2_z + mark3_z)/2 - (media_start2_z_val + media_start3_z_val)/2
             # print(f"CO2 initial Position is : x = {(media_start2_x_val + media_start3_x_val)/2} mm, y = {(media_start2_y_val + media_start3_y_val)/2} mm, z = {(media_start2_z_val + media_start3_z_val)/2} mm.")
             # print(f"CO2 current Position is : x = {(mark2_x + mark3_x)/2} mm, y = {(mark2_y + mark3_y)/2} mm, z = {(mark2_z + mark3_z)/2} mm.")
 
-            # 求解media的3D 坐标
             media_x = -37.6  # CO'2箱子会动，所以x也会动起来，但是x移动不影响模型，而且我们采样当前数据集不包含x的移动，所以暂且是fixed
             media_y = round(-46.8 + mark_y_drif,1)
             media_z = 165.7  # 箱子只在x和y方向移动，并不会存在z的移动
-            # 打印CO2的空间位置
             print(f"CO2 空间位移 is : x = {mark_x_drif} mm, y = {mark_y_drif} mm, z = {mark_z_drif} mm.")
 
             num_steps = max(round(abs(err_y)/1), round(abs(err_x)/0.7))
@@ -301,9 +272,6 @@ while True:
                     x_need = 0
                     y_need = 0
 
-
-
-                    # # 更新目标坐标, X，这里的X和Qt摄像头系统X一致，用于计算混合气体的Machine Learning
                     if err_x >= 0 and 0.7 * k < err_x:  # 当误差是大于0.7，则调整1次后后不再调整
                         target_new[0, 0] = round(expected_target[0, 0] - 0.7 * k, 1)  # X 坐标
                     elif err_x >= 0 and 0.7 * k >= err_x:  # 当误差是小于0.7，不调整
@@ -314,12 +282,6 @@ while True:
                     elif err_x < 0 and 0.7 * k >= abs(err_x):  # 当误差是小于0.7，不调整
                         x_need = 1  # 不需要在x方向上调整
                         target_new[0, 0] = expected_target[0, 0]
-
-                    # 更新目标坐标Z，这里的Z和Qt摄像头系统Y平行但方向完全相反，摄像头是垂直往下为正
-
-                    # 这里是计算混合气体阶段，所以Python这里是正方向必须与training mode保持一致，那么就是与模型训练的数据采集时候的坐标轴一致
-                    # 我们在采集数据时候，采用的是与摄像头一致的坐标系，因此这里的Y正方向是垂直往下
-                    # Z 方向我们默认是不会发生移动的
 
                     if err_y >= 0 and err_y <= 1.5 and 1 * k <= err_y:  # 当误差是大于等于1，小于等于1.5，则每次调整1 mm
                         target_new[0, 1] = round(expected_target[0, 1] - 1 * k, 1)
@@ -352,16 +314,6 @@ while True:
                     tof = np.zeros(196)
                     dist = np.zeros(196)
 
-                    #  这里的计算tof是纯air中，可以快速计算
-                    # for i in range(196):
-                    #     dist[i] = np.sqrt((xy[i, 0] - target[0, 0]) ** 2 + (xy[i, 1] - target[0, 1]) ** 2 + (
-                    #                 xy[i, 2] - target[0, 2]) ** 2)  # 单位是 mm
-                    #     tof[i] = dist[i] / 346 * 1e6  # 单位是 ns
-
-                    #  如果是air和混合气体，那么就需要调用trained model来预测ToF
-                    #  利用导入模型进行预测，输入是6个nodes，前三个是Co2盒子的位置，后面3个是目标点位置
-                    # print(f"CO2 带入模型的位置 is : x = {media_x} mm, y = {media_y} mm, z = {media_z} mm.")
-                    # print(f"target测量得到的目标位置 is : x = {target[0, 0]} mm, y = {target[0, 1]} mm, z = {target[0, 2]} mm.")
                     print(f"target理论期待的目标位置 is : x = {expected_target[0, 0]} mm, y = {expected_target[0, 1]} mm, z = {expected_target[0, 2]} mm.")
                     print(f"target修正后输入ML预测位置 is : x = {target_new[0, 0]} mm, y = {target_new[0, 1]} mm, z = {target_new[0, 2]} mm.")
 
@@ -414,33 +366,12 @@ while True:
                             trap_code_calibration[i] += 250
 
                     index = f2.iloc[:, 0:2].to_numpy()  # 提取前两列作为索引
-
-                    # print(f"Phase更新计算完毕.")
-                    # print(f"Length of index: {len(index)}")
-
-                    # 打开文件写入
-                    # filename = f"{18 + k - 1}.csv"
-                    # hex_values = []
-                    # with open(filename, 'w') as s0:
-                    #     for i in range(203):  # 遍历 203 行
-                    #         channel_index = index[i, 1]  # 第二列是 Channel 索引
-                    #         calibration_value = trap_code_calibration[int(index[i, 0] - 1)]  # 第一列是校正索引
-                    #         s0.write(f'{channel_index:.6f},{calibration_value}\n')
-                    #         calibration_value_int = int(calibration_value)
-                    #         hex_values.append(f"{calibration_value_int:02X}")  # 将字节值转换为两位的十六进制字符串
-                    # print("Hex data:", " ".join(hex_values))
-                    # print(f"文件 '{filename}' 写入完成！\n")
-
-
-                    # 打开串口
                     if not ser.is_open:
                         ser.open()
                     # 发送字符 170 (0xAA)+ 203 bytes
                     data_to_send = bytearray([170] + [int(trap_code_calibration[index[i][0] - 1]) for i in range(203)])  # 按照数据包发送
                     ser.write(data_to_send)
                     ser.flush()
-
-                    # 按照单个字节发送
                     # ser.write(bytes([170]))
                     # for i in range(len(index)):
                     #     value = trap_code_calibration[index[i][0] - 1]  # 获取对应值（MATLAB 索引从 1 开始）
