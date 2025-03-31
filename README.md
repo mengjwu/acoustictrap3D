@@ -7,3 +7,7 @@ We use two FPGA (Cyclone III) to control 196 elements. "MRI_mjwu" is for the mia
 **2. PCB desgin**
 
 The "PCB artwork" is the Geber layout of PCB, and it can directly be used to manufacture PCB board.
+
+**3. XY-axis motor platform**
+
+"xyztable.ino" file is for controlling XY-axis motor platform
