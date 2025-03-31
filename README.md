@@ -11,3 +11,12 @@ The "PCB artwork" is the Geber layout of PCB, and it can directly be used to man
 **3. XY-axis motor platform**
 
 "xyztable.ino" file is for controlling XY-axis motor platform
+
+**4. Python for model training**
+
+"mian.py" is for leaning model training using the PyCharm IDE.
+
+**5. K-Wave model for data collection**
+
+""
+   
