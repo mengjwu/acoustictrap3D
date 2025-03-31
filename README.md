@@ -6,4 +6,4 @@ We use two FPGA (Cyclone III) to control 196 elements. "MRI_mjwu" is for the mia
 
 **2. PCB desgin**
 
-The "PCB Geber" is the layout of PCB, can directly be used to manufacture PCB board.
+The "PCB artwork" is the Geber layout of PCB, and it can directly be used to manufacture PCB board.
