@@ -31,7 +31,7 @@ ser = serial.Serial(
 df = pd.read_csv('mark_start.csv', header=None)
 mark2 = df.iloc[:, 0:3].values
 mark3 = df.iloc[:, 3:6].values
-# 对每一列进行梳理，保留小数点后2位
+
 media_start2_x = [round(x, 2) for x in mark2[:, 0]]
 media_start2_y = [round(y, 2) for y in mark2[:, 1]]
 media_start2_z = [round(z, 2) for z in mark2[:, 2]]
@@ -46,10 +46,10 @@ expected_target[0,0] = df1.iloc[0, 0]
 expected_target[0,1] = df1.iloc[0, 1]
 expected_target[0,2] = df1.iloc[0, 2]
 
-# 提取每列的最频繁值作为代表值
+
 def most_frequent(lst):
     return max(set(lst), key=lst.count)
-# 获取每列最频繁的值
+
 media_start2_x_val = most_frequent(media_start2_x)
 media_start2_y_val = most_frequent(media_start2_y)
 media_start2_z_val = most_frequent(media_start2_z)
@@ -57,7 +57,7 @@ media_start3_x_val = most_frequent(media_start3_x)
 media_start3_y_val = most_frequent(media_start3_y)
 media_start3_z_val = most_frequent(media_start3_z)
 
-# 比较上面求得的z值是否一致，误差小于1,大于1则终止整个程序
+
 z_difference = abs(media_start2_z_val - media_start3_z_val)
 if z_difference > 1:
     print(f"Error: 两个标记点Z值差别大，CO2位置倾斜需要调整，终止程序.")
@@ -67,12 +67,11 @@ else:
 
 
 # 首先发送 phase，让 ball 到达 target 点
-# 初始化延迟矩阵
 delay = np.zeros((16, 203))  # 15行203列的零矩阵
 for i in range(1, 17):
     filename = f"/home/mjwu/PixelXYZ_20250221/trap_py_learning/target4/{i}.csv"
-    num = np.loadtxt(filename, delimiter=',', dtype=int).T  # 读取并转置
-    delay[i - 1, :] = num[1, :]  # 第二列的数据赋值到延迟矩阵
+    num = np.loadtxt(filename, delimiter=',', dtype=int).T 
+    delay[i - 1, :] = num[1, :]  
 
 # 循环发送每一行
 for ii in range(16):
@@ -140,12 +139,11 @@ xy[:, 2] = 0
 # 保存为 CSV 文件
 np.savetxt("xyz_coordinates.csv", xy, delimiter=',', comments='')
 
-# 读取 calibration.csv 和 sort_index_edited.csv 文件
 f3 = pd.read_csv('calibration.csv')  # 读取 calibration.csv
 reson_calibration = np.zeros((f3.shape[0], f3.shape[1]))  # 初始化数组，假设与 f3 形状一致
 f2 = pd.read_csv('sort_index_edited.csv', header=None)  # 读取 sort_index_edited.csv
 F3 = f3.iloc[:, 0:4].to_numpy()  # 提取前四列并转换为 NumPy 数组，单位为微秒（us）
-# 初始化变量
+
 reson_calibration = np.zeros(196, dtype=int)
 # 计算 reson_calibration，单位转换为 ns，步长为 100 ns
 for i in range(196):
@@ -241,7 +239,7 @@ while True:
             # else:
             #     print('误差值合法，往下执行.')
 
-            mark2_x = data1.iloc[0, 0]  # 读取动态的mark坐标， 第一列X
+            mark2_x = data1.iloc[0, 0]  # 
             mark2_y = data1.iloc[0, 1]  # 第二列Y
             mark2_z = data1.iloc[0, 2]  # 第三列Z
             mark3_x = data1.iloc[0, 3]  # 第一列
@@ -254,9 +252,9 @@ while True:
             # print(f"CO2 initial Position is : x = {(media_start2_x_val + media_start3_x_val)/2} mm, y = {(media_start2_y_val + media_start3_y_val)/2} mm, z = {(media_start2_z_val + media_start3_z_val)/2} mm.")
             # print(f"CO2 current Position is : x = {(mark2_x + mark3_x)/2} mm, y = {(mark2_y + mark3_y)/2} mm, z = {(mark2_z + mark3_z)/2} mm.")
 
-            media_x = -37.6  # CO'2箱子会动，所以x也会动起来，但是x移动不影响模型，而且我们采样当前数据集不包含x的移动，所以暂且是fixed
+            media_x = -37.6  
             media_y = round(-46.8 + mark_y_drif,1)
-            media_z = 165.7  # 箱子只在x和y方向移动，并不会存在z的移动
+            media_z = 165.7  
             print(f"CO2 空间位移 is : x = {mark_x_drif} mm, y = {mark_y_drif} mm, z = {mark_z_drif} mm.")
 
             num_steps = max(round(abs(err_y)/1), round(abs(err_x)/0.7))
@@ -308,23 +306,19 @@ while True:
                     if x_need == 1 and y_need == 1:
                         break  # 终止当前的 for 循环
 
-                    target_new[0, 2] = expected_target[0, 2]  # z值不变化，和训练样本的一致
+                    target_new[0, 2] = expected_target[0, 2]  
 
-                    # 计算每个点到目标点的距离和 TOF
                     tof = np.zeros(196)
                     dist = np.zeros(196)
 
-                    print(f"target理论期待的目标位置 is : x = {expected_target[0, 0]} mm, y = {expected_target[0, 1]} mm, z = {expected_target[0, 2]} mm.")
-                    print(f"target修正后输入ML预测位置 is : x = {target_new[0, 0]} mm, y = {target_new[0, 1]} mm, z = {target_new[0, 2]} mm.")
-
                     startTime = time.time()
-                    data_testing_x = np.array([[media_x, media_y, media_z, target_new[0, 0], target_new[0, 1], target_new[0, 2]]])  # 这里预测的结果是us，不是ns
+                    data_testing_x = np.array([[media_x, media_y, media_z, target_new[0, 0], target_new[0, 1], target_new[0, 2]]])  
                     data_testing = scalerx.transform(data_testing_x)
                     data_testing_y = loaded_model.predict(data_testing)
                     tof = scalery.inverse_transform(data_testing_y) # prediction is us
-                    tof = tof.flatten() #将ToF的二维数组，转化为1维
-                    tof = 1000 * tof  # 单位转换为ns这样，这样可以确保下面的代码不要每一处都修改
-                    stopTime = time.time()  # 结束计时
+                    tof = tof.flatten() 
+                    tof = 1000 * tof  
+                    stopTime = time.time()  
                     print("ToF prediction time is [units: ms]", 1000*(stopTime - startTime))  # 打印用时
                     # print("Prediction Results are [units: nanosecond]",tof)
 
@@ -340,9 +334,7 @@ while True:
                         tof_r[i] = tmax - tof[i]  # air
                         tof_r_code[i] = np.round(np.mod(tmax - tof[i], 250 * 100) / 100)  # 40KHz means 周期是25 us = 250000 ns
 
-                    # 另外twintrap还需要在左右2侧加一个signature，左侧加pi / 2, 右侧减去pi / 2
-                    # 四分之一个周期，就是25000 / 4 = 6250 ns
-                    # 初始化变量
+              
                     trap_code = np.zeros(196, dtype=int)
                     sign_code = np.zeros(196, dtype=int)
                     sign = np.zeros(196, dtype=int)
@@ -368,6 +360,7 @@ while True:
                     index = f2.iloc[:, 0:2].to_numpy()  # 提取前两列作为索引
                     if not ser.is_open:
                         ser.open()
+                        
                     # 发送字符 170 (0xAA)+ 203 bytes
                     data_to_send = bytearray([170] + [int(trap_code_calibration[index[i][0] - 1]) for i in range(203)])  # 按照数据包发送
                     ser.write(data_to_send)
