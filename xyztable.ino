@@ -21,26 +21,26 @@ int i1 = 0; // for y
 int x_dir = 1;
 int x1_dir = 1;
 int status_on = 0;
-unsigned long last_adc_check_time = 0; // 上次检查 ADC 的时间
-int value_voltage = 0; // 缓存 ADC 值
-bool sendFlag = false; // 标志变量，用于控制是否已经发送过字符
+unsigned long last_adc_check_time = 0;  
+int value_voltage = 0;  
+bool sendFlag = false;  
 
 void loop()
 {
-  //unsigned long current_time = millis(); // 获取当前时间
-    //if (current_time - last_adc_check_time > 1000) { // 每隔10ms检查一次
-        value_voltage = analogRead(vol); // 更新缓存值,  3.3V is 675;
+  //unsigned long current_time = millis();  
+    //if (current_time - last_adc_check_time > 1000) {  
+        value_voltage = analogRead(vol);  
        // last_adc_check_time = current_time;
     //}
   //Serial.print("The voltage stp is "); Serial.println(value_voltage);
 
   if (value_voltage > 600 )
     {
-      if (!sendFlag) { // 如果尚未发送过字符
-        Serial.print("Y"); // 发送字符
-        sendFlag = true; // 设置标志变量为 true
+      if (!sendFlag) { 
+        Serial.print("Y");  
+        sendFlag = true;  
       }
-      //Serial.print("当前正在正常运行,"); 
+     
       if(i < 3200 && i >= 1600 & x_dir)  { digitalWrite(DIR_p, LOW);   i = i+1;}//Direction n
       else if(i ==  3200 && x_dir)  { digitalWrite(DIR_p, HIGH);   i = i-1; x_dir = 0;}//Direction p
       else if(i > 0 && x_dir == 0)  { digitalWrite(DIR_p, HIGH);   i = i-1; x_dir = 0;}//Direction p
@@ -69,7 +69,7 @@ void loop()
 
   if (value_voltage <= 600 ) // operation stop, the chamber come back the prigional position
     {
-       //Serial.print("当前正在回归初始位置，"); 
+ 
        Serial.print("N");
        if(i< 1600) {
                     digitalWrite(DIR_p, LOW);   
