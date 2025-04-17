@@ -2,7 +2,7 @@
 
 **1. FPGA Code**
 
-We use two FPGA (Cyclone III) to control 196 elements. "MRI" is for the mian FPGA and "mjwu_ultrasound_array_secondary" is for the secondary FPGA.
+We use two FPGA (Cyclone III) to control 196 elements. "MRI" is for the mian FPGA and "ultrasound_array_secondary" is for the secondary FPGA.
 
 **2. PCB desgin**
 
