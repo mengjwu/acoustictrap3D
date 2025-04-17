@@ -71,12 +71,12 @@ line([cube_vertices(3,1), cube_vertices(4,1)], [cube_vertices(3,2), cube_vertice
 line([cube_vertices(5,1), cube_vertices(6,1)], [cube_vertices(5,2), cube_vertices(6,2)], [cube_vertices(5,3), cube_vertices(6,3)], 'Color', 'k', 'LineWidth', 2);
 line([cube_vertices(7,1), cube_vertices(8,1)], [cube_vertices(7,2), cube_vertices(8,2)], [cube_vertices(7,3), cube_vertices(8,3)], 'Color', 'k', 'LineWidth', 2);
 
-fill3([v1(1), v3(1), v7(1), v5(1)], [v1(2), v3(2), v7(2), v5(2)], [v1(3), v3(3), v7(3), v5(3)], 'r', 'FaceAlpha', 0.3); % 前面
-fill3([v2(1), v4(1), v8(1), v6(1)], [v2(2), v4(2), v8(2), v6(2)], [v2(3), v4(3), v8(3), v6(3)], 'r', 'FaceAlpha', 0.3); % 后面
-fill3([v1(1), v2(1), v6(1), v5(1)], [v1(2), v2(2), v6(2), v5(2)], [v1(3), v2(3), v6(3), v5(3)], 'r', 'FaceAlpha', 0.3); % 左面
-fill3([v3(1), v4(1), v8(1), v7(1)], [v3(2), v4(2), v8(2), v7(2)], [v3(3), v4(3), v8(3), v7(3)], 'r', 'FaceAlpha', 0.3); % 右面
-fill3([v1(1), v2(1), v4(1), v3(1)], [v1(2), v2(2), v4(2), v3(2)], [v1(3), v2(3), v4(3), v3(3)], 'r', 'FaceAlpha', 0.3); % 顶面
-fill3([v5(1), v6(1), v8(1), v7(1)], [v5(2), v6(2), v8(2), v7(2)], [v5(3), v6(3), v8(3), v7(3)], 'r', 'FaceAlpha', 0.3); % 底面
+fill3([v1(1), v3(1), v7(1), v5(1)], [v1(2), v3(2), v7(2), v5(2)], [v1(3), v3(3), v7(3), v5(3)], 'r', 'FaceAlpha', 0.3);  
+fill3([v2(1), v4(1), v8(1), v6(1)], [v2(2), v4(2), v8(2), v6(2)], [v2(3), v4(3), v8(3), v6(3)], 'r', 'FaceAlpha', 0.3); 
+fill3([v1(1), v2(1), v6(1), v5(1)], [v1(2), v2(2), v6(2), v5(2)], [v1(3), v2(3), v6(3), v5(3)], 'r', 'FaceAlpha', 0.3);  
+fill3([v3(1), v4(1), v8(1), v7(1)], [v3(2), v4(2), v8(2), v7(2)], [v3(3), v4(3), v8(3), v7(3)], 'r', 'FaceAlpha', 0.3);  
+fill3([v1(1), v2(1), v4(1), v3(1)], [v1(2), v2(2), v4(2), v3(2)], [v1(3), v2(3), v4(3), v3(3)], 'r', 'FaceAlpha', 0.3);  
+fill3([v5(1), v6(1), v8(1), v7(1)], [v5(2), v6(2), v8(2), v7(2)], [v5(3), v6(3), v8(3), v7(3)], 'r', 'FaceAlpha', 0.3);  
 
 
 num_elements = size(element_xyz, 1); 
@@ -209,7 +209,7 @@ for i=3:1:3 %4mm
             begin_y = element_xyz(85,2) - 34-(floor((ii)/7)-1)*1.5; %  
         elseif(mod(ii,7)) % 1,2,3,4,5,6
             begin_x = 0.5 * element_xyz(85,1) + 0.5 * element_xyz(99,1) -3*1.5 + (mod(ii,7)-1)*1.5;  
-            begin_y = element_xyz(85,2) - 34-floor((ii)/7)*1.5; % 正上方34mm处 start
+            begin_y = element_xyz(85,2) - 34-floor((ii)/7)*1.5; %  
         end
         begin_z = 0.5 * element_xyz(91,3) + 0.5 *element_xyz(92,3);% center
         
