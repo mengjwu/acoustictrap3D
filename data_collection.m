@@ -2,7 +2,7 @@
 
 clear
 % physical_coordinate，unit is mm, x is horizonation y is vertical
-diary('log-mjwu.txt') ;
+diary('log.txt') ;
 
 speed_air = 346;
 wavelength = 346 * 25/1000;  
